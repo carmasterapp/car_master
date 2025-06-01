@@ -1,0 +1,83 @@
+name: Generate Premium Codes
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Number of codes to generate'
+        required: true
+        default: '10'
+        type: string
+      type:
+        description: 'Type of codes'
+        required: true
+        default: 'customer'
+        type: choice
+        options:
+        - customer
+        - influencer
+        - demo
+        - launch
+        - promo
+      notes:
+        description: 'Optional notes'
+        required: false
+        type: string
+
+jobs:
+  generate-codes:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Generate Premium Codes
+      env:
+        CARMASTER_MASTER_KEY: ${{ secrets.CARMASTER_MASTER_KEY }}
+      run: |
+        node scripts/generate-codes.js "${{ github.event.inputs.count }}" "${{ github.event.inputs.type }}" "${{ github.event.inputs.notes }}"
+      
+    - name: Commit updated codes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        git add data/premium-codes.json
+        git add generated-codes-*.txt
+        
+        git commit -m "🎫 Add ${{ github.event.inputs.count }} new ${{ github.event.inputs.type }} premium codes
+        
+        - Type: ${{ github.event.inputs.type }}
+        - Count: ${{ github.event.inputs.count }}
+        - Generated: $(date -u)
+        - Notes: ${{ github.event.inputs.notes }}"
+        
+        git push
+        
+    - name: Upload generated codes artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: premium-codes-${{ github.event.inputs.type }}-${{ github.run_number }}
+        path: generated-codes-*.txt
+        retention-days: 30
+        
+    - name: Create summary
+      run: |
+        echo "## 🎉 Premium Codes Generated Successfully!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Type**: ${{ github.event.inputs.type }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Count**: ${{ github.event.inputs.count }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Generated**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Notes**: ${{ github.event.inputs.notes }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Codes have been added to the repository and are ready for distribution." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📁 **Download the codes**: Check the 'Artifacts' section below" >> $GITHUB_STEP_SUMMARY
