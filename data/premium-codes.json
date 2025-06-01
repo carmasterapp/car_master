@@ -1,0 +1,32 @@
+{
+  "codes": {
+    "CARMASTER-DEMO-2024-TEST": {
+      "type": "demo",
+      "status": "unused",
+      "features": ["all"],
+      "expiresAt": "2025-12-31T23:59:59.000Z",
+      "maxUses": null,
+      "currentUses": 0,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "devices": [],
+      "batch": "INITIAL_DEMO"
+    },
+    "CARMASTER-LAUNCH-SPECIAL": {
+      "type": "launch",
+      "status": "unused", 
+      "features": ["all"],
+      "expiresAt": "2024-12-31T23:59:59.000Z",
+      "maxUses": 1,
+      "currentUses": 0,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "devices": [],
+      "batch": "LAUNCH_PROMO"
+    }
+  },
+  "metadata": {
+    "lastUpdated": "2024-01-01T00:00:00.000Z",
+    "version": "1.0",
+    "totalCodes": 2,
+    "totalUsed": 0
+  }
+}
